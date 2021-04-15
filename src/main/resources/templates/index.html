@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<tr th:each="message : ${user}">
+  <td th:text="${user.id}">1</td>
+  <td><a href="#" th:text="${user.title}">Title ...</a></td>
+  <td th:text="${user.text}">Text ...</td>
+</tr>
+</body>
+</html>
