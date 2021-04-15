@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!-- <p th:text="${owner.getName()}">VALUE</p>
+ <p th:text="${owner.getId()}">VALUE</p> -->
+<div th:each="owner : ${owners}">
+    <a th:href="@{/owner/{id}(id=${owner.getId()})}" th:text="${owner.getName()}">Owner</a>
+</div>
+
+<br/>
+<hr/>
+
+<a href="/owner/new">Create new owner</a>
+
+</body>
+</html>
