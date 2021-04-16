@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+// class for correct data mapping between database and Owner entity
 public final class OwnerMapper implements RowMapper<Owner> {
     @Override
     public Owner mapRow(ResultSet rs, int i) throws SQLException {

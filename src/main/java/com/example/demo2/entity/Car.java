@@ -6,9 +6,18 @@ public class Car {
     private int id;
     private String company;
     private String model;
-    private int owner_id;
+    private int ownerId;
+    private int year;
 
     public Car() {
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setOwnerId(int ownerId) {
+        this.ownerId = ownerId;
     }
 
     public void setCompany(String company) {
@@ -17,10 +26,6 @@ public class Car {
 
     public void setModel(String model) {
         this.model = model;
-    }
-
-    public void setOwner_id(int owner_id) {
-        this.owner_id = owner_id;
     }
 
     public int getId() {
@@ -35,7 +40,15 @@ public class Car {
         return model;
     }
 
-    public int getOwner_id() {
-        return owner_id;
+    public int getOwnerId() {
+        return ownerId;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
     }
 }
