@@ -5,18 +5,29 @@
     <title>Information about owner</title>
 </head>
 <body>
-<label >Id: </label>
+<label>Id: </label>
 <a th:text="${owner.getId()}">VALUE</a>
 <br/>
-<label >Name: </label>
+<label>Name: </label>
 <a th:text="${owner.getName()}">VALUE</a>
 <br/>
-<label >Age: </label>
+<label>Age: </label>
 <a th:text="${owner.getAge()}">VALUE</a>
 <br/>
-<label >Email: </label>
+<label>Email: </label>
 <a th:text="${owner.getEmail()}">VALUE</a>
 <br/>
+<br>
+
+<label>Owners cars: </label>
+<div>
+    <ol>
+        <li th:each="car : ${owner.getCarList()}">
+            <a th:href="@{/car/{id}(id=${car.getId()})}" th:text="${car.getCompany()} + ' ' + ${car.getModel()}">Car</a>
+        </li>
+    </ol>
+<!--     <a th:href="@{/car/{id}(id=${car.getId()})}" th:text="${car.getCompany()}">Car</a> -->
+</div>
 
 <hr/>
 <form th:method="GET" th:action="@{/owner/{id}/edit(id=${owner.getId()})}">

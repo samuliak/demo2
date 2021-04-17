@@ -9,7 +9,6 @@
 <div th:each="owner : ${owners}">
     <a th:href="@{/owner/{id}(id=${owner.getId()})}" th:text="${owner.getName()}">Owner</a>
 </div>
-
 <br/>
 <hr/>
 

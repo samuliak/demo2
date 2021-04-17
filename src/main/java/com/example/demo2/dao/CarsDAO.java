@@ -2,7 +2,7 @@ package com.example.demo2.dao;
 
 import com.example.demo2.entity.Car;
 import com.example.demo2.mapper.CarMapper;
-import com.example.demo2.validator.EntityValidator;
+import com.example.demo2.validator.EntitiesValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -15,12 +15,12 @@ public class CarsDAO {
     // jdbc bean for connect with database
     private final JdbcTemplate jdbcTemplate;
 
-    private static EntityValidator entityValidator;
+    private final EntitiesValidator entitiesValidator;
 
     @Autowired
-    public CarsDAO(JdbcTemplate jdbcTemplate, EntityValidator entityValidator) {
+    public CarsDAO(JdbcTemplate jdbcTemplate, EntitiesValidator entitiesValidator) {
         this.jdbcTemplate = jdbcTemplate;
-        this.entityValidator = entityValidator;
+        this.entitiesValidator = entitiesValidator;
     }
 
 
@@ -29,12 +29,8 @@ public class CarsDAO {
     }
 
     public void save(Car car) {
-        if (entityValidator.ownerExistById(car.getOwnerId())) {
-            jdbcTemplate.update("INSERT INTO test.\"Car\" (company, model, owner_id, year) VALUES (?,?,?,?)",
-                    car.getCompany(), car.getModel(), car.getOwnerId(), car.getYear());
-        } else
-            jdbcTemplate.update("INSERT INTO test.\"Car\" (company, model, owner_id, year) VALUES (?,?,?,?)",
-                    car.getCompany(), car.getModel(), null, car.getYear());
+        jdbcTemplate.update("INSERT INTO test.\"Car\" (company, model, owner_id, year) VALUES (?,?,?,?)",
+                car.getCompany(), car.getModel(), car.getOwnerId(), car.getYear());
     }
 
     public void delete(int id) {
@@ -44,25 +40,13 @@ public class CarsDAO {
     //show Car by ID, realization without sql injection
     public Car show(int id) {
         // here need to make page 404
-        Car car = new Car();
-        if (entityValidator.carExistById(id)) {
-            car = jdbcTemplate.queryForObject("SELECT * FROM test.\"Car\" WHERE id=?",
-                    new Object[]{id}, new CarMapper());
-        }
-        return car;
-
+        return jdbcTemplate.queryForObject("SELECT * FROM test.\"Car\" WHERE id=?",
+                new Object[]{id}, new CarMapper());
     }
 
     // update function
     public void update(int id, Car car) {
-        if (entityValidator.carExistById(car.getOwnerId())) {
-            jdbcTemplate.update("UPDATE test.\"Car\" SET company=?, model=?, owner_id=?, year=? WHERE id=?",
-                    car.getCompany(), car.getModel(), car.getOwnerId(), car.getYear(), id);
-        } else {
-            // here need to make page 404
-            jdbcTemplate.update("UPDATE test.\"Car\" SET company=?, model=?, owner_id=?, year=? WHERE id=?",
-                    car.getCompany(), car.getModel(), null, car.getYear(), id);
-        }
+        jdbcTemplate.update("UPDATE test.\"Car\" SET company=?, model=?, owner_id=?, year=? WHERE id=?",
+                car.getCompany(), car.getModel(), car.getOwnerId(), car.getYear(), id);
     }
-
 }

@@ -1,8 +1,8 @@
 package com.example.demo2.dao;
 
 import com.example.demo2.entity.Owner;
+import com.example.demo2.mapper.CarMapper;
 import com.example.demo2.mapper.OwnerMapper;
-import com.example.demo2.validator.EntityValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -14,12 +14,10 @@ public class OwnerDAO {
 
     private static JdbcTemplate jdbcTemplate;
 
-    private static EntityValidator entityValidator;
 
     @Autowired
-    public OwnerDAO(JdbcTemplate jdbcTemplate, EntityValidator entityValidator) {
+    public OwnerDAO(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.entityValidator = entityValidator;
     }
 
     public List<Owner> owners() {
@@ -37,12 +35,13 @@ public class OwnerDAO {
 
     //show Owner by ID, realization without sql injection
     public Owner show(int id) {
-        if (entityValidator.ownerExistById(id)){
-            return jdbcTemplate.queryForObject("SELECT * FROM test.\"Owner\" WHERE id=?",
-                    new Object[]{id}, new OwnerMapper());
-        }
-        return new Owner();
-
+        Owner owner = jdbcTemplate.queryForObject("SELECT * FROM test.\"Owner\" WHERE id=?",
+                new Object[]{id},
+                new OwnerMapper());
+        owner.setCarList(jdbcTemplate.query("SELECT * FROM test.\"Car\" WHERE owner_id=?",
+                new Object[]{id},
+                new CarMapper()));
+        return owner;
     }
 
     public void update(int id, Owner owner) {

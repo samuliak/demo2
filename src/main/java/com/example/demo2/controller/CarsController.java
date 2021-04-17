@@ -2,11 +2,14 @@ package com.example.demo2.controller;
 
 import com.example.demo2.dao.CarsDAO;
 import com.example.demo2.entity.Car;
-import com.example.demo2.entity.Owner;
+import com.example.demo2.validator.EntitiesValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/car")
@@ -14,9 +17,12 @@ public class CarsController {
 
     private final CarsDAO carsDAO;
 
+    private final EntitiesValidator entitiesValidator;
+
     @Autowired
-    public CarsController(CarsDAO carsDAO) {
+    public CarsController(CarsDAO carsDAO, EntitiesValidator entitiesValidator) {
         this.carsDAO = carsDAO;
+        this.entitiesValidator = entitiesValidator;
     }
 
     // get all cars in list and show in html table
@@ -28,23 +34,45 @@ public class CarsController {
 
     // Create car from html form
     @PostMapping()
-    public String createCar(@ModelAttribute("car") Car car) {
-        carsDAO.save(car);
-        return "redirect:/car";
+    public String createCar(@ModelAttribute("car") @Valid Car car, BindingResult bindingResult) {
+        if (bindingResult.hasErrors())
+            return "car/newCar";
+        if (entitiesValidator.ownerExistById(car.getOwnerId())) {
+            carsDAO.save(car);
+            return "redirect:/car";
+        } else {
+            bindingResult.rejectValue("ownerId", "ownerId", "OwnerId should be correct");
+            return "car/newCar";
+        }
     }
 
     // show car by ID
     @GetMapping("/{id}")
     public String showCar(@PathVariable("id") int id, Model model) {
-        model.addAttribute("car", carsDAO.show(id));
+        Car car = new Car();
+        if (entitiesValidator.carExistById(id))
+            car = carsDAO.show(id);
+
+        model.addAttribute("car", car);
         return "car/show";
     }
 
     // update car by ID
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("car") Car car, @PathVariable("id") int id) {
-        carsDAO.update(id, car);
-        return "redirect:/car";
+    public String update(@ModelAttribute("car") @Valid Car car, BindingResult bindingResult,
+                         @PathVariable("id") int id) {
+        if (bindingResult.hasErrors()) {
+            return "car/carEdit";
+        } else {
+            if (entitiesValidator.carExistById(id) && entitiesValidator.ownerExistById(car.getOwnerId())) {
+                carsDAO.update(id, car);
+                return "redirect:/car";
+            } else {
+                bindingResult.rejectValue("ownerId", "ownerId", "OwnerId should be correct");
+                return "car/carEdit";
+            }
+        }
+
     }
 
     // delete car by ID
@@ -56,8 +84,7 @@ public class CarsController {
 
     // show the form for car create and make post query after submit
     @GetMapping("/new")
-    public String newCar(Model model) {
-        model.addAttribute("car", new Car());
+    public String newCar(@ModelAttribute("car") Car car) {
         return "car/newCar";
     }
 
