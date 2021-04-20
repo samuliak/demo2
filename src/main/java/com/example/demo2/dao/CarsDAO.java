@@ -5,6 +5,8 @@ import com.example.demo2.mapper.CarMapper;
 import com.example.demo2.validator.EntitiesValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -14,12 +16,15 @@ import java.util.List;
 public class CarsDAO {
     // jdbc bean for connect with database
     private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     private final EntitiesValidator entitiesValidator;
 
     @Autowired
-    public CarsDAO(JdbcTemplate jdbcTemplate, EntitiesValidator entitiesValidator) {
+    public CarsDAO(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate,
+                   EntitiesValidator entitiesValidator) {
         this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
         this.entitiesValidator = entitiesValidator;
     }
 
@@ -39,9 +44,19 @@ public class CarsDAO {
 
     //show Car by ID, realization without sql injection
     public Car show(int id) {
-        // here need to make page 404
-        return jdbcTemplate.queryForObject("SELECT * FROM test.\"Car\" WHERE id=?",
-                new Object[]{id}, new CarMapper());
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", id);
+
+        return namedParameterJdbcTemplate.queryForObject("SELECT * FROM test.\"Car\" WHERE id=:id",
+                params, (rs, i) -> {
+                    Car car = new Car();
+                    car.setId(rs.getInt("id"));
+                    car.setCompany(rs.getString("company"));
+                    car.setModel(rs.getString("model"));
+                    car.setOwnerId(rs.getInt("owner_id"));
+                    car.setYear(rs.getInt("year"));
+                    return car;
+                });
     }
 
     // update function

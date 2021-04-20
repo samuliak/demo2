@@ -26,7 +26,7 @@ public class CarsController {
     }
 
     // get all cars in list and show in html table
-    @GetMapping()
+    @GetMapping
     public String showOwnersList(Model model) {
         model.addAttribute("cars", carsDAO.cars());
         return "car/carsList";
@@ -74,6 +74,7 @@ public class CarsController {
         }
 
     }
+
 
     // delete car by ID
     @DeleteMapping("/{id}")
