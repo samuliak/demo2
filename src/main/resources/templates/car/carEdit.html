@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit car</title>
+</head>
+<body>
+<form th:method="PATCH" th:action="@{/car/{id}(id=${car.getId()})}" th:object="${car}">
+  <label for="company">Enter company: </label>
+  <input type="text" th:field="*{company}" id="company"/>
+  <div style="color:red" th:if="${#fields.hasErrors('company')}" th:errors="*{company}">Company error</div>
+  <br/>
+
+  <label for="model">Enter company: </label>
+  <input type="text" th:field="*{model}" id="model"/>
+  <div style="color:red" th:if="${#fields.hasErrors('model')}" th:errors="*{model}">Model error</div>
+  <br/>
+
+  <label for="year">Enter year: </label>
+  <input type="number" th:field="*{year}" id="year" min="1965" max="2022" value="2010"/>
+  <div style="color:red" th:if="${#fields.hasErrors('year')}" th:errors="*{year}">Year error</div>
+  <br/>
+
+  <label for="ownerId">Enter owner id: </label>
+  <input type="text" th:field="*{ownerId}" id="ownerId"/>
+  <div style="color:red" th:if="${#fields.hasErrors('ownerId')}" th:errors="*{ownerId}">OwnerId error</div>
+  <br/>
+
+  <input type="submit" value="Update!"/>
+  <hr/>
+  <a th:href="@{/car}">Return back</a>
+</form>
+</body>
+</html>

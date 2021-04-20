@@ -5,12 +5,10 @@
     <title>Title</title>
 </head>
 <body>
-<!-- <p th:text="${owner.getName()}">VALUE</p>
- <p th:text="${owner.getId()}">VALUE</p> -->
+
 <div th:each="owner : ${owners}">
     <a th:href="@{/owner/{id}(id=${owner.getId()})}" th:text="${owner.getName()}">Owner</a>
 </div>
-
 <br/>
 <hr/>
 
